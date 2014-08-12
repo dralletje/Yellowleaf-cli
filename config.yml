@@ -1,0 +1,11 @@
+port: 8021
+
+# Storage type
+storage: 'mysql'
+
+storages:
+  mysql:
+    host: localhost
+    username: 'yellowleaf'
+    password: 'yellowleaf'
+    database: 'yellowleaf'
