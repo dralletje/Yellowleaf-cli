@@ -1,4 +1,9 @@
 // YellowLeaf-cli FTP server by Michiel Dral 
+
+/* Mysql multihost
+Allows you to use one database for multiple installations.
+No longer having many databases with only a few accounts.
+ */
 var Sequelize;
 
 Sequelize = require('sequelize');
@@ -17,7 +22,8 @@ module.exports = function(config, opts) {
         unique: true
       },
       password: Sequelize.STRING,
-      directory: Sequelize.STRING
+      directory: Sequelize.STRING,
+      host: Sequelize.STRING
     });
     return sequelize.sync({
       force: opts.force
@@ -27,7 +33,8 @@ module.exports = function(config, opts) {
       return User.find({
         where: {
           name: username,
-          password: password
+          password: password,
+          host: config['current-host']
         }
       }).then()["catch"](function(err) {
         console.log('Mysql error:', err);
@@ -36,7 +43,6 @@ module.exports = function(config, opts) {
         if (result == null) {
           throw new Error('Username and password combination incorrect.');
         }
-        console.log(result);
         return result.directory;
       });
     };

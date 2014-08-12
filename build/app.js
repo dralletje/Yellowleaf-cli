@@ -1,5 +1,5 @@
 // YellowLeaf-cli FTP server by Michiel Dral 
-var Drive, Promise, config, ext, fs, opts, path, startFTP, yaml;
+var Drive, Promise, command, config, ext, fs, getDirectory, opts, path, startFTP, yaml;
 
 startFTP = require('yellowleaf/build/ftp');
 
@@ -36,14 +36,34 @@ if (config.base == null) {
   config.base = '/';
 }
 
+command = opts._[0];
+
+getDirectory = void 0;
+
 Promise["try"](function() {
-  var storageConfig, storageFactory;
-  storageFactory = require("./storage/" + config.storage);
-  storageConfig = config.storages[config.storage];
-  return storageFactory(storageConfig);
-})["catch"](function(e) {
-  throw new Error("Error loading storage: " + e);
-}).then(function(getDirectory) {
+  if (command === 'run' || command === 'install') {
+    return Promise["try"](function() {
+      var storageConfig, storageFactory, storageOpts;
+      storageFactory = require("./storage/" + config.storage);
+      storageConfig = config.storages[config.storage];
+      storageOpts = {
+        force: command === 'install'
+      };
+      return storageFactory(storageConfig, storageOpts);
+    }).then(function(fn) {
+      return getDirectory = fn;
+    })["catch"](function(e) {
+      throw new Error("Error loading storage: " + e);
+    });
+  }
+}).then(function() {
+  if (command === 'install') {
+    console.log('Install done! ;-D');
+    return;
+  }
+  if (command !== 'run') {
+    throw new Error('Unknown command :\'-(');
+  }
   startFTP(function(user, password) {
     return getDirectory(user, password).then(function(directory) {
       directory = path.join('/', directory);
@@ -52,5 +72,5 @@ Promise["try"](function() {
   }, config.port);
   return console.log("Welcome! Listening at port " + config.port + "!");
 })["catch"](function(e) {
-  return console.log("Sorry,\nI couldn't start the server.\n" + e.message + "\n\nLove, Michiel.");
+  return console.log("Sorry,\n\nI couldn't start the server.\nMaybe you know what happened when looking at this:\n" + e.message + "\n\nLove, Michiel.");
 });

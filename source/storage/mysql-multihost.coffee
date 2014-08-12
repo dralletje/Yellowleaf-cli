@@ -1,3 +1,8 @@
+### Mysql multihost
+Allows you to use one database for multiple installations.
+No longer having many databases with only a few accounts.
+###
+
 Sequelize = require 'sequelize'
 
 module.exports = (config, opts) ->
@@ -6,13 +11,17 @@ module.exports = (config, opts) ->
 
   sequelize.authenticate().then ->
     console.log 'Connection to database made.'
-    ## Mysql models
+    ## Mysql model (Yes, only one)
     User = sequelize.define 'User',
+      # Login creditials
       name:
         type: Sequelize.STRING
         unique: true
       password: Sequelize.STRING
+      # Directory to move into
       directory: Sequelize.STRING
+      # What host the user belongs to
+      host: Sequelize.STRING
 
     sequelize
       .sync(force: opts.force)
@@ -25,6 +34,7 @@ module.exports = (config, opts) ->
         where:
           name: username
           password: password
+          host: config['current-host']
 
       .then() # Get proper Promise
       .catch (err) ->
@@ -35,8 +45,6 @@ module.exports = (config, opts) ->
         # If no users found, DIE! :-D
         if not result?
           throw new Error 'Username and password combination incorrect.'
-
-        console.log result
         result.directory
 
   .catch (err) ->

@@ -1,11 +1,21 @@
 port: 8021
 
 # Storage type
-storage: 'mysql'
+storage: 'mysql-multihost'
 
 storages:
   mysql:
+    # Mysql login
     host: localhost
     username: 'yellowleaf'
     password: 'yellowleaf'
     database: 'yellowleaf'
+
+  mysql-multihost:
+    # Mysql login
+    host: localhost
+    username: 'yellowleaf'
+    password: 'yellowleaf'
+    database: 'yellowleaf'
+    # ID/name of current machine
+    current-host: 'Michiel Macbook'
