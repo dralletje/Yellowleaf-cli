@@ -36,7 +36,7 @@ if (config.base == null) {
   config.base = '/';
 }
 
-command = opts._[0];
+command = opts._[0] || 'run';
 
 getDirectory = void 0;
 

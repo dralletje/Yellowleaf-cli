@@ -29,10 +29,10 @@ else
 
 # Verify some
 config.base ?= '/'
+command = opts._[0] or 'run'
 
 
 # Run the command
-command = opts._[0]
 getDirectory = undefined
 
 Promise.try ->
