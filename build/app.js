@@ -36,6 +36,10 @@ if (config.base == null) {
   config.base = '/';
 }
 
+if (config.port == null) {
+  config.port = 21;
+}
+
 command = opts._[0] || 'run';
 
 getDirectory = void 0;
@@ -69,7 +73,7 @@ Promise["try"](function() {
       directory = path.join('/', directory);
       return new Drive(config.base + directory);
     });
-  }, config.port);
+  }).debug(false).listen(config.port);
   return console.log("Welcome! Listening at port " + config.port + "!");
 })["catch"](function(e) {
   return console.log("Sorry,\n\nI couldn't start the server.\nMaybe you know what happened when looking at this:\n" + e.message + "\n\nLove, Michiel.");

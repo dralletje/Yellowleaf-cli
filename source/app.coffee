@@ -12,7 +12,7 @@ opts = require("nomnom")
     string: '-c FILE, --config=FILE'
     default: 'config.yml'
     help: 'YML/JSON file with configuration.'
-  .parse();
+  .parse()
 
 
 # Load the file in
@@ -29,6 +29,7 @@ else
 
 # Verify some
 config.base ?= '/'
+config.port ?= 21
 command = opts._[0] or 'run'
 
 
@@ -67,7 +68,9 @@ Promise.try ->
     getDirectory(user, password).then (directory) ->
       directory = path.join '/', directory
       new Drive config.base + directory
-  , config.port
+  .debug(no)
+  .listen(config.port)
+
   console.log "Welcome! Listening at port #{config.port}!"
 
 .catch (e) ->
