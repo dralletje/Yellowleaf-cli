@@ -109,5 +109,5 @@ Promise["try"](function() {
   }).debug(false).listen(config.port);
   return console.log("Welcome! Listening at port " + config.port + "!");
 })["catch"](function(e) {
-  return console.log("Sorry,\n\nI couldn't start the server.\nMaybe you know what happened when looking at this:\n" + e.message + "\n\nLove, Michiel.");
+  return console.log("Sorry,\n\nI couldn't start the server.\nMaybe you know what happened when looking at this:\n" + e.stack + "\n\nLove, Michiel.");
 });

@@ -129,7 +129,7 @@ Promise.try ->
 
     I couldn't start the server.
     Maybe you know what happened when looking at this:
-    #{e.message}
+    #{e.stack}
 
     Love, Michiel.
   """
