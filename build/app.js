@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // YellowLeaf-cli FTP server by Michiel Dral 
 var Drive, FTP, Promise, bcrypt, command, config, ext, fs, getDirectory, myconf, opts, password, path, yaml;
 

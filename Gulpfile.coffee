@@ -10,7 +10,10 @@ gulp.task "coffee", (cb) ->
   gulp.src(paths.coffee)
     .pipe(plumber())
     .pipe(coffee(bare: true))
-    .pipe(header("// YellowLeaf-cli FTP server by Michiel Dral \n"))
+    .pipe(header("""
+      #!/usr/bin/env node
+      // YellowLeaf-cli FTP server by Michiel Dral \n
+    """))
     .pipe(gulp.dest('./build/'))
 
 

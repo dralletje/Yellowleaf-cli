@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // YellowLeaf-cli FTP server by Michiel Dral 
 
 /* Mysql multihost
