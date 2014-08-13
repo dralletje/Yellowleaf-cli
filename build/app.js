@@ -1,5 +1,5 @@
 // YellowLeaf-cli FTP server by Michiel Dral 
-var Drive, FTP, Promise, command, config, ext, fs, getDirectory, myconf, opts, path, yaml;
+var Drive, FTP, Promise, bcrypt, command, config, ext, fs, getDirectory, myconf, opts, password, path, yaml;
 
 FTP = require('yellowleaf/build/ftp');
 
@@ -13,7 +13,9 @@ path = require('path');
 
 Promise = require('bluebird');
 
-opts = require("nomnom").help("You can currently use three commands:\nRun, install and resetconf.\nResetconf will place the default conf where you specified the config.\nInstall will ehh.. install (:p) the storage engine.\nRun will ehh.. again just run the server! :-D").option('config', {
+bcrypt = Promise.promisifyAll(require('bcryptjs'));
+
+opts = require("nomnom").help("You can currently use four commands:\nRun, install, hashpass and resetconf\nResetconf will place the default conf where you specified the config.\nInstall will ehh.. install (:p) the storage engine.\nRun will ehh.. again just run the server! :-D\nHashpass will hash the password your send with it.").option('config', {
   required: true,
   string: '-c FILE, --config=FILE',
   "default": 'config.yml',
@@ -28,6 +30,20 @@ if (command === 'resetconf') {
   fs.writeFileSync(opts.config, fs.readFileSync(myconf));
   console.log("Reset the config at " + opts.config + " to the default one!");
   console.log("(I hope for you that it is a yaml file you specified.)");
+  return;
+}
+
+if (command === 'hashpass') {
+  password = opts._[1];
+  if (password == null) {
+    throw new Error('Please pass a password as second argument!');
+  }
+  bcrypt.hashAsync(password, 8).then(function(hash) {
+    console.log('Your hash is ready:');
+    return console.log(hash);
+  })["catch"](function(err) {
+    return console.log(err, '!!!');
+  });
   return;
 }
 
@@ -78,8 +94,15 @@ Promise["try"](function() {
     throw new Error('Unknown command :\'-(');
   }
   FTP(function(user, password) {
-    return getDirectory(user, password).then(function(directory) {
-      directory = path.join('/', directory);
+    return getDirectory(user).spread(function(hash, directory) {
+      this.directory = directory;
+      return bcrypt.compareAsync(password, hash);
+    }).then(function(valid) {
+      var directory;
+      if (!valid) {
+        throw new Error('Bad login.');
+      }
+      directory = path.join('/', this.directory);
       return new Drive(config.base + directory);
     });
   }).debug(false).listen(config.port);

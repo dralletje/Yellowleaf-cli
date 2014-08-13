@@ -5,15 +5,17 @@ fs   = require 'fs'
 yaml = require('js-yaml').safeLoad
 path = require 'path'
 Promise = require 'bluebird'
+bcrypt = Promise.promisifyAll require('bcryptjs')
 
 # Load options (Only the config file and command for now :p)
 opts = require("nomnom")
   .help("""
-    You can currently use three commands:
-    Run, install and resetconf.
+    You can currently use four commands:
+    Run, install, hashpass and resetconf
     Resetconf will place the default conf where you specified the config.
     Install will ehh.. install (:p) the storage engine.
     Run will ehh.. again just run the server! :-D
+    Hashpass will hash the password your send with it.
   """)
   .option 'config',
     required: yes
@@ -33,6 +35,19 @@ if command is 'resetconf'
 
   console.log "Reset the config at #{opts.config} to the default one!"
   console.log "(I hope for you that it is a yaml file you specified.)"
+  return
+
+
+if command is 'hashpass'
+  password = opts._[1]
+  if not password?
+    throw new Error 'Please pass a password as second argument!'
+  bcrypt.hashAsync(password, 8).then (hash) ->
+    console.log 'Your hash is ready:'
+    console.log hash
+
+  .catch (err) ->
+    console.log err, '!!!'
   return
 
 # Load the file in
@@ -87,9 +102,21 @@ Promise.try ->
 
   # Start the FTP server and start listening
   FTP (user, password) ->
-    getDirectory(user, password).then (directory) ->
-      directory = path.join '/', directory
+    # Get the password hash and the directory
+    getDirectory(user).spread (hash, directory) ->
+      # Save directory
+      @directory = directory
+      # Check if the password matches the hash
+      bcrypt.compareAsync(password, hash)
+
+    .then (valid) ->
+      if not valid
+        throw new Error 'Bad login.'
+
+      directory = path.join '/', @directory
       new Drive config.base + directory
+
+
   .debug(no)
   .listen(config.port)
 
