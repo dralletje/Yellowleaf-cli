@@ -1,3 +1,8 @@
+### Mysql
+Just loads the users from a mysql table called Users.
+It will make the table itself with the install (or if it empty, just run) command.
+###
+
 Sequelize = require 'sequelize'
 
 module.exports = (config, opts) ->

@@ -1,4 +1,4 @@
-startFTP = require 'yellowleaf/build/ftp'
+FTP = require 'yellowleaf/build/ftp'
 Drive = require 'yellowleaf/build/filesystem'
 
 fs   = require 'fs'
@@ -6,6 +6,7 @@ yaml = require('js-yaml').safeLoad
 path = require 'path'
 Promise = require 'bluebird'
 
+# Load options (Only the config file and command for now :p)
 opts = require("nomnom")
   .option 'config',
     required: yes
@@ -13,7 +14,6 @@ opts = require("nomnom")
     default: 'config.yml'
     help: 'YML/JSON file with configuration.'
   .parse()
-
 
 # Load the file in
 config = fs.readFileSync opts.config
@@ -57,14 +57,17 @@ Promise.try ->
       throw new Error "Error loading storage: #{e}"
 
 .then ->
+  # When installing, stop here!
   if command is 'install'
     console.log 'Install done! ;-D'
     return
 
+  # Only install and run are possible commands
   if command isnt 'run'
     throw new Error 'Unknown command :\'-('
 
-  startFTP (user, password) ->
+  # Start the FTP server and start listening
+  FTP (user, password) ->
     getDirectory(user, password).then (directory) ->
       directory = path.join '/', directory
       new Drive config.base + directory
