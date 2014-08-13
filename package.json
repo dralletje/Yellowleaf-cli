@@ -1,6 +1,6 @@
 {
   "name": "yellowleaf-cli",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Drop 'n go FTP server, no installation or hassle :-D",
   "main": "build/app.js",
   "bin": {
