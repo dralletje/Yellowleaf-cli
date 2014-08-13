@@ -1,7 +1,7 @@
 // YellowLeaf-cli FTP server by Michiel Dral 
-var Drive, Promise, command, config, ext, fs, getDirectory, opts, path, startFTP, yaml;
+var Drive, FTP, Promise, command, config, ext, fs, getDirectory, myconf, opts, path, yaml;
 
-startFTP = require('yellowleaf/build/ftp');
+FTP = require('yellowleaf/build/ftp');
 
 Drive = require('yellowleaf/build/filesystem');
 
@@ -13,12 +13,23 @@ path = require('path');
 
 Promise = require('bluebird');
 
-opts = require("nomnom").option('config', {
+opts = require("nomnom").help("You can currently use three commands:\nRun, install and resetconf.\nResetconf will place the default conf where you specified the config.\nInstall will ehh.. install (:p) the storage engine.\nRun will ehh.. again just run the server! :-D").option('config', {
   required: true,
   string: '-c FILE, --config=FILE',
   "default": 'config.yml',
   help: 'YML/JSON file with configuration.'
 }).parse();
+
+command = opts._[0] || 'run';
+
+if (command === 'resetconf') {
+  myconf = __dirname + '/../config.yml';
+  console.log("Moving config from " + myconf + " to " + opts.config + "...");
+  fs.writeFileSync(opts.config, fs.readFileSync(myconf));
+  console.log("Reset the config at " + opts.config + " to the default one!");
+  console.log("(I hope for you that it is a yaml file you specified.)");
+  return;
+}
 
 config = fs.readFileSync(opts.config);
 
@@ -39,8 +50,6 @@ if (config.base == null) {
 if (config.port == null) {
   config.port = 21;
 }
-
-command = opts._[0] || 'run';
 
 getDirectory = void 0;
 
@@ -68,7 +77,7 @@ Promise["try"](function() {
   if (command !== 'run') {
     throw new Error('Unknown command :\'-(');
   }
-  startFTP(function(user, password) {
+  FTP(function(user, password) {
     return getDirectory(user, password).then(function(directory) {
       directory = path.join('/', directory);
       return new Drive(config.base + directory);

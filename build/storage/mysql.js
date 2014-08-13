@@ -1,4 +1,9 @@
 // YellowLeaf-cli FTP server by Michiel Dral 
+
+/* Mysql
+Just loads the users from a mysql table called Users.
+It will make the table itself with the install (or if it empty, just run) command.
+ */
 var Sequelize;
 
 Sequelize = require('sequelize');
