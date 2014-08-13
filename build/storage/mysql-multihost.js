@@ -33,7 +33,6 @@ module.exports = function(config, opts) {
       return User.find({
         where: {
           name: username,
-          password: password,
           host: config['current-host']
         }
       }).then()["catch"](function(err) {
@@ -41,9 +40,9 @@ module.exports = function(config, opts) {
         throw err;
       }).then(function(result) {
         if (result == null) {
-          throw new Error('Username and password combination incorrect.');
+          throw new Error('Bad login.');
         }
-        return result.directory;
+        return [result.password, result.directory];
       });
     };
   })["catch"](function(err) {

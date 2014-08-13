@@ -33,7 +33,6 @@ module.exports = (config, opts) ->
       User.find
         where:
           name: username
-          password: password
           host: config['current-host']
 
       .then() # Get proper Promise
@@ -44,8 +43,8 @@ module.exports = (config, opts) ->
       .then (result) ->
         # If no users found, DIE! :-D
         if not result?
-          throw new Error 'Username and password combination incorrect.'
-        result.directory
+          throw new Error 'Bad login.'
+        [result.password, result.directory]
 
   .catch (err) ->
     throw new Error 'Unable to connect to the database:' + err

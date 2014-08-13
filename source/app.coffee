@@ -102,9 +102,21 @@ Promise.try ->
 
   # Start the FTP server and start listening
   FTP (user, password) ->
-    getDirectory(user, password).then (directory) ->
-      directory = path.join '/', directory
+    # Get the password hash and the directory
+    getDirectory(user).spread (hash, directory) ->
+      # Save directory
+      @directory = directory
+      # Check if the password matches the hash
+      bcrypt.compareAsync(password, hash)
+
+    .then (valid) ->
+      if not valid
+        throw new Error 'Bad login.'
+
+      directory = path.join '/', @directory
       new Drive config.base + directory
+
+
   .debug(no)
   .listen(config.port)
 

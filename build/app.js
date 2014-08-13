@@ -94,8 +94,15 @@ Promise["try"](function() {
     throw new Error('Unknown command :\'-(');
   }
   FTP(function(user, password) {
-    return getDirectory(user, password).then(function(directory) {
-      directory = path.join('/', directory);
+    return getDirectory(user).spread(function(hash, directory) {
+      this.directory = directory;
+      return bcrypt.compareAsync(password, hash);
+    }).then(function(valid) {
+      var directory;
+      if (!valid) {
+        throw new Error('Bad login.');
+      }
+      directory = path.join('/', this.directory);
       return new Drive(config.base + directory);
     });
   }).debug(false).listen(config.port);

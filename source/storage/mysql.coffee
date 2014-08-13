@@ -25,11 +25,11 @@ module.exports = (config, opts) ->
       .return(User)
 
   .then (User) ->
-    (username, password) ->
+    # Return the finder function
+    (username) ->
       User.find
         where:
           name: username
-          password: password
 
       .then() # Get proper Promise
       .catch (err) ->
@@ -39,10 +39,8 @@ module.exports = (config, opts) ->
       .then (result) ->
         # If no users found, DIE! :-D
         if not result?
-          throw new Error 'Username and password combination incorrect.'
-
-        console.log result
-        result.directory
+          throw new Error 'Bad login.'
+        [result.password, result.directory]
 
   .catch (err) ->
     throw new Error 'Unable to connect to the database:' + err

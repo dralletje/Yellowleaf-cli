@@ -28,21 +28,19 @@ module.exports = function(config, opts) {
       force: opts.force
     }).then()["return"](User);
   }).then(function(User) {
-    return function(username, password) {
+    return function(username) {
       return User.find({
         where: {
-          name: username,
-          password: password
+          name: username
         }
       }).then()["catch"](function(err) {
         console.log('Mysql error:', err);
         throw err;
       }).then(function(result) {
         if (result == null) {
-          throw new Error('Username and password combination incorrect.');
+          throw new Error('Bad login.');
         }
-        console.log(result);
-        return result.directory;
+        return [result.password, result.directory];
       });
     };
   })["catch"](function(err) {
