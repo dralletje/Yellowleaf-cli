@@ -2,9 +2,18 @@
   "name": "yellowleaf-cli",
   "version": "0.0.1",
   "description": "Drop 'n go FTP server, no installation or hassle :-D",
-  "main": "index.js",
+
+  "main": "build/app.js",
+  "bin": {
+    "yellowleaf": "build/app.js"
+  },
+  "preferGlobal": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "directories": {
+    "lib": "build",
+    "source:": "source"
   },
   "repository": {
     "type": "git",
@@ -13,10 +22,16 @@
   "keywords": [
     "ftp",
     "mysql",
-    "json"
+    "json",
+    "easy",
+    "drop 'n go"
   ],
-  "author": "Michiel Dral <m.c.dral@gmail.com>",
-  "license": "GPL v2",
+  "author": {
+    "name": "Michiel Dral",
+    "email": "m.c.dral@gmail.com",
+    "url": "http://dral.eu"
+  },
+  "license": "GPL-2.0",
   "bugs": {
     "url": "https://github.com/dralletje/Yellowleaf-cli/issues"
   },
